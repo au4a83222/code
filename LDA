@@ -1,0 +1,36 @@
+# Setting the working directory 
+setwd("~/Downloads")
+
+# Loading the required libraries
+# if (!require("MASS")) install.packages("MASS")
+# if (!require("ggplot2")) install.packages("ggplot2")
+library(MASS)
+library(ggplot2)
+
+# Formatting the data 
+mydata = read.csv("ManchesterResult.csv")
+rownames(mydata) = mydata[,1]
+mydata = mydata[,-1]
+mydata = t(mydata)
+
+# Grouping the data 
+grp = c(rep("ManchesterCountry",41),rep("StokeOnTrent",20),rep("Birmingham",29),rep("ManchesterCity",24))
+mydata = (cbind.data.frame(mydata,grp))
+
+# Doing the linear discriminant analysis 
+lda_mydata=lda(grp~.,data=mydata)
+lda_mydata
+write.table(lda_mydata$scaling,file="SpeciesDiscriminants.csv",sep=",")
+
+# Plotting the results 
+#plot(lda_mydata)
+lda.data <- cbind(mydata, predict(lda_mydata)$x)
+# Plotting LD1 against LD2
+ggplot(lda.data, aes(LD1, LD2)) +
+  geom_point(aes(color = grp))
+# Plotting LD2 against LD3
+ggplot(lda.data, aes(LD2, LD3)) +
+  geom_point(aes(color = grp))
+# Plotting LD1 against LD3
+ggplot(lda.data, aes(LD1, LD3)) +
+  geom_point(aes(color = grp))
