@@ -1,0 +1,34 @@
+# Setting the working directory 
+	setwd("~/Downloads")
+	
+	# Loading the required libraries
+	# if (!require("MASS")) install.packages("MASS")
+	# if (!require("ggplot2")) install.packages("ggplot2")
+	library(MASS)
+
+# Formatting the data
+mydata = read.csv("comparsion-in-Man.csv")
+mydata = mydata[,-84]
+mydata = mydata[,-1]
+
+# Grouping the data
+grp =c(rep("Highfield",6),rep("DaisyNook",8),rep("Reddish",9),rep("Kersal",8),rep("Salewater",10))
+mydata = mydata[1:length(grp),-1]
+mydata = (cbind.data.frame(mydata,grp))
+
+# Doing the linear discriminant analysis
+lda_mydata=lda(grp~.,data=mydata)
+
+	
+	# Plotting the results 
+	#plot(lda_mydata)
+	lda.data <- cbind(mydata, predict(lda_mydata)$x)
+	# Plotting LD1 against LD2
+	ggplot(lda.data, aes(LD1, LD2)) +
+	  geom_point(aes(color = grp))
+	# Plotting LD2 against LD3
+	ggplot(lda.data, aes(LD2, LD3)) +
+	  geom_point(aes(color = grp))
+	# Plotting LD1 against LD3
+	ggplot(lda.data, aes(LD1, LD3)) +
+	  geom_point(aes(color = grp))
